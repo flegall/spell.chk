@@ -35,7 +35,9 @@ alphabet = 'abcdefghijklmnopqrstuvwxyz'
 # Returns all level1 mispellings from a word
 edits1 = (word) ->
     splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
-    deletes = [].concat [word[1..], (a + b[1..] for [a, b] in splits)]...
+    splits = [].concat [[[word, '']], splits, [['', word]]]...
+    deletes = (a + b[1..] for [a, b] in splits when b.length > 1)
+    transposes = (a + b[1] + b[0] + b[2..] for [a, b] in splits when b.length > 1)
 
 # Count word occurences
 wordOccs = learn (extractWords txt)
