@@ -14,9 +14,11 @@ if process.argv.length != 3
 # Reading file
 txt = fs.readFileSync process.argv[2], 'UTF-8'
 
+# Extract words of an input text
 extractWords = (text) ->
     txt.toLowerCase().match /[a-z]+/g
 
+# Count word occurences
 learn = (words) ->
     ref = {}
     store = (word) ->
@@ -24,4 +26,7 @@ learn = (words) ->
     store word for word in words
     ref
     
-inspect learn (extractWords txt)
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+wordOccs = learn (extractWords txt)
+inspect wordOccs
+
