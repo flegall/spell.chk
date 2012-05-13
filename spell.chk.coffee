@@ -33,10 +33,7 @@ alphabet = 'abcdefghijklmnopqrstuvwxyz'
 wordOccs = learn (extractWords txt)
 
 edits1 = (word) ->
-    splits = []
-    for i in [0..word.length-2]
-        splits.push word[0..i]
-        splits.push word[i+1..word.length]
-    splits
+    splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
+    deletes = [].concat.apply([], [word[1..], (a + b[1..] for [a, b] in splits)])
 
 inspect (edits1 'tpolm')
