@@ -1,3 +1,6 @@
+# Basic spell checker, very very inpired by 
+# http://norvig.com/spell-correct.html
+
 fs = require('fs')
 util = require('util')
 
@@ -28,5 +31,12 @@ learn = (words) ->
     
 alphabet = 'abcdefghijklmnopqrstuvwxyz'
 wordOccs = learn (extractWords txt)
-inspect wordOccs
 
+edits1 = (word) ->
+    splits = []
+    for i in [0..word.length-2]
+        splits.push word[0..i]
+        splits.push word[i+1..word.length]
+    splits
+
+inspect (edits1 'tpolm')
