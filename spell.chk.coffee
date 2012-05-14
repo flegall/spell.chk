@@ -9,17 +9,16 @@ inspect = (object) ->
     console.log (util.inspect object, true, null, true)
 
 # CL processing
-#inspect process.argv
-if process.argv.length != 3
-    console.error 'Usage coffee spell.chk reference-file'
+if process.argv.length != 4
+    console.error 'Usage coffee spell.chk.coffee file-to-check reference-file'
     return
 
 # Reading file
-txt = fs.readFileSync process.argv[2], 'UTF-8'
+referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
 
 # Extract words of an input text
 extractWords = (text) ->
-    txt.toLowerCase().match /[a-z]+/g
+    text.toLowerCase().match /[a-z]+/g
 
 # Count word occurences
 learn = (words) ->
@@ -33,16 +32,17 @@ learn = (words) ->
 letters = 'abcdefghijklmnopqrstuvwxyz'
 
 # Returns all level1 mispellings from a word
-edits1 = (word) ->
+edits_l1 = (word) ->
     splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
     splits = [].concat [[['', word]], splits, [[word, '']]]...
     deletes = (a + b[1..] for [a,b] in splits when b.length >= 1)
     transposes = (a + b[1] + b[0] + b[2..] for [a,b] in splits when b.length > 1)
     replaces = [].concat (a + c + b[1..] for c in letters for [a,b] in splits when b.length >= 1)...
     inserts = [].concat (a + c + b for c in letters for [a,b] in splits)...
+    [].concat [deletes, transposes, replaces, inserts]...
+
+inspect (edits_l1 'tpolm')
 
 # Count word occurences
-wordOccs = learn (extractWords txt)
-
-inspect (edits1 'anniversaire')
+wordOccs = learn (extractWords referenceTxt)
 
