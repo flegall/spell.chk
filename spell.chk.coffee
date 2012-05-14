@@ -10,11 +10,11 @@ inspect = (object) ->
 
 # CL processing
 if process.argv.length != 4
-    console.error 'Usage coffee spell.chk.coffee file-to-check reference-file'
+    console.error ('Usage coffee spell.chk.coffee file-to-check reference-file')
     return
 
 # Reading file
-referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
+referenceTxt = fs.readFileSync (process.argv[3], 'UTF-8')
 
 # Extract words of an input text
 extractWords = (text) ->
