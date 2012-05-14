@@ -1,4 +1,4 @@
-# Basic spell checker, very very inpired by 
+# Basic spell checker, very very inpired by
 # http://norvig.com/spell-correct.html
 
 fs = require ('fs')
