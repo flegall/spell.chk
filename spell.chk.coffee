@@ -1,8 +1,8 @@
 # Basic spell checker, very very inpired by 
 # http://norvig.com/spell-correct.html
 
-fs = require('fs')
-util = require('util')
+fs = require ('fs')
+util = require ('util')
 
 # inspect an object
 inspect = (object) ->
@@ -31,6 +31,13 @@ learn = (words) ->
 # Possible letters
 letters = 'abcdefghijklmnopqrstuvwxyz'
 
+# Makes a set of unique objects from an array
+## Actually just an object whose properties are keys and values are booleans
+set = (array) ->
+    s = {}
+    s[item] = true for item in array
+    s
+
 # Returns all level1 mispellings from a word
 edits_l1 = (word) ->
     splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
@@ -39,10 +46,10 @@ edits_l1 = (word) ->
     transposes = (a + b[1] + b[0] + b[2..] for [a,b] in splits when b.length > 1)
     replaces = [].concat (a + c + b[1..] for c in letters for [a,b] in splits when b.length >= 1)...
     inserts = [].concat (a + c + b for c in letters for [a,b] in splits)...
-    [].concat [deletes, transposes, replaces, inserts]...
+    set [].concat [deletes, transposes, replaces, inserts]...
 
 inspect (edits_l1 'tpolm')
 
 # Count word occurences
-wordOccs = learn (extractWords referenceTxt)
-
+referenceWords = extractWords (referenceTxt)
+wordOccs = learn (referenceWords)
