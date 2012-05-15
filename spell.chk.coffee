@@ -50,6 +50,11 @@ known_edits_l2 = (word, wordsSet) ->
     edits2 = (e2 for e2 in Object.keys (edits_l1 e1) when wordsSet[e2] for e1 in Object.keys (edits_l1 word))
     set ([].concat edits2...)
 
+# Returns a subset of words which are part of wordsSet
+known = (words, wordsSet) ->
+    set (w for w in words when wordsSet[w])
+    
+
 # Reading file
 referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
 
@@ -58,5 +63,5 @@ referenceWords = extractWords (referenceTxt)
 wordOccs = learn (referenceWords)
 referenceWordsSet = set (referenceWords)
 
-inspect (Object.keys (known_edits_l2 'margin', referenceWordsSet))
+inspect (known ['tpolm', 'margin'], referenceWordsSet)
 
