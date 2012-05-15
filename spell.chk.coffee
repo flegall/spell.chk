@@ -54,6 +54,13 @@ known_edits_l2 = (word, wordsSet) ->
 known = (words, wordsSet) ->
     set (w for w in words when wordsSet[w])
     
+# Suggests candidates for a word
+suggest = (word, wordsSet) ->
+    candidates = Object.keys (known [word], wordsSet)
+    candidates = Object.keys (known (Object.keys (edits_l1 word)), wordsSet) if candidates.length == 0
+    candidates = Object.keys (known_edits_l2 word, wordsSet)                 if candidates.length == 0
+    candidates = [word]                                                      if candidates.length == 0
+    candidates
 
 # Reading file
 referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
@@ -63,5 +70,5 @@ referenceWords = extractWords (referenceTxt)
 wordOccs = learn (referenceWords)
 referenceWordsSet = set (referenceWords)
 
-inspect (known ['tpolm', 'margin'], referenceWordsSet)
+inspect (suggest 'mergin', referenceWordsSet)
 
