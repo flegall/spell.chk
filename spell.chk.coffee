@@ -39,6 +39,10 @@ set = (array) ->
 unique = (array) ->
     Object.keys (set (array))
 
+# Returns true if an array is empty
+empty = (array) ->
+    array.length == 0
+
 # Returns all level1 mispellings from a word
 edits_l1 = (word) ->
     splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
@@ -60,21 +64,31 @@ known = (words, wordsSet) ->
     
 # Suggests candidates for a word
 suggest = (word, wordsSet) ->
-    empty = (array) ->
-        array.length == 0
     candidates = known [word], wordsSet
     candidates = known (edits_l1 word), wordsSet if empty candidates
     candidates = known_edits_l2 word, wordsSet   if empty candidates
-    candidates = [word]                          if empty candidates
+    candidates = []                              if empty candidates
     candidates
 
-# Reading file
-referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
+# Print correction replacement for a word
+printCorrection = (word, wordsSet) ->
+    candidates = suggest word, wordsSet
 
-# Count word occurences
+    if empty candidates
+        console.log "No suggestion found for: #{word}"
+    else if candidates.length != 1 or candidates[0] =! word
+        console.log "Suggestions found for: #{word} : #{candidates}"
+
+# Reading reference file and collecting words
+referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
 referenceWords = extractWords (referenceTxt)
 wordOccs = learn (referenceWords)
 referenceWordsSet = set (referenceWords)
 
-inspect (suggest 'lobstre', referenceWordsSet)
+# Readiing file to check and extracting words
+toCheckTxt = fs.readFileSync process.argv[2], 'UTF-8'
+toCheckWords = extractWords (toCheckTxt)
+
+# Print correction
+printCorrection word, referenceWordsSet for word in toCheckWords
 
