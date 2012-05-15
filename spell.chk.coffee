@@ -29,11 +29,15 @@ learn = (words) ->
 letters = 'abcdefghijklmnopqrstuvwxyz'
 
 # Makes a set of unique objects from an array
-## Actually just an object whose properties are keys and values are booleans
+## Actually just a JS object with properties where values are booleans
 set = (array) ->
     s = {}
     s[item] = true for item in array
     s
+
+# Makes an array of unique objects from an existing array
+unique = (array) ->
+    Object.keys (set (array))
 
 # Returns all level1 mispellings from a word
 edits_l1 = (word) ->
@@ -43,23 +47,23 @@ edits_l1 = (word) ->
     transposes = (a + b[1] + b[0] + b[2..] for [a,b] in splits when b.length > 1)
     replaces = [].concat (a + c + b[1..] for c in letters for [a,b] in splits when b.length >= 1)...
     inserts = [].concat (a + c + b for c in letters for [a,b] in splits)...
-    set ([].concat [deletes, transposes, replaces, inserts]...)
+    unique ([].concat [deletes, transposes, replaces, inserts]...)
 
 # Returns all known words which are separarated from a level-2 distance from a word
 known_edits_l2 = (word, wordsSet) ->
-    edits2 = (e2 for e2 in Object.keys (edits_l1 e1) when wordsSet[e2] for e1 in Object.keys (edits_l1 word))
-    set ([].concat edits2...)
+    edits2 = (e2 for e2 in edits_l1 e1 when wordsSet[e2] for e1 in edits_l1 word)
+    unique ([].concat edits2...)
 
 # Returns a subset of words which are part of wordsSet
 known = (words, wordsSet) ->
-    set (w for w in words when wordsSet[w])
+    unique (w for w in words when wordsSet[w])
     
 # Suggests candidates for a word
 suggest = (word, wordsSet) ->
-    candidates = Object.keys (known [word], wordsSet)
-    candidates = Object.keys (known (Object.keys (edits_l1 word)), wordsSet) if candidates.length == 0
-    candidates = Object.keys (known_edits_l2 word, wordsSet)                 if candidates.length == 0
-    candidates = [word]                                                      if candidates.length == 0
+    candidates = known [word], wordsSet
+    candidates = known (edits_l1 word), wordsSet if candidates.length == 0
+    candidates = known_edits_l2 word, wordsSet   if candidates.length == 0
+    candidates = [word]                          if candidates.length == 0
     candidates
 
 # Reading file
@@ -70,5 +74,5 @@ referenceWords = extractWords (referenceTxt)
 wordOccs = learn (referenceWords)
 referenceWordsSet = set (referenceWords)
 
-inspect (suggest 'mergin', referenceWordsSet)
+inspect (suggest 'lobstre', referenceWordsSet)
 
