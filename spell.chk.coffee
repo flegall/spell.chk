@@ -13,9 +13,6 @@ if process.argv.length != 4
     console.error ('Usage coffee spell.chk.coffee file-to-check reference-file')
     return
 
-# Reading file
-referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
-
 # Extract words of an input text
 extractWords = (text) ->
     text.toLowerCase().match /[a-z]+/g
@@ -48,8 +45,18 @@ edits_l1 = (word) ->
     inserts = [].concat (a + c + b for c in letters for [a,b] in splits)...
     set ([].concat [deletes, transposes, replaces, inserts]...)
 
-inspect (edits_l1 'tpolm')
+# Returns all known words which are separarated from a level-2 distance from a word
+known_edits_l2 = (word, wordsSet) ->
+    edits2 = (e2 for e2 in Object.keys (edits_l1 e1) when wordsSet[e2] for e1 in Object.keys (edits_l1 word))
+    set ([].concat edits2...)
+
+# Reading file
+referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
 
 # Count word occurences
 referenceWords = extractWords (referenceTxt)
 wordOccs = learn (referenceWords)
+referenceWordsSet = set (referenceWords)
+
+inspect (Object.keys (known_edits_l2 'margin', referenceWordsSet))
+
