@@ -60,10 +60,12 @@ known = (words, wordsSet) ->
     
 # Suggests candidates for a word
 suggest = (word, wordsSet) ->
+    empty = (array) ->
+        array.length == 0
     candidates = known [word], wordsSet
-    candidates = known (edits_l1 word), wordsSet if candidates.length == 0
-    candidates = known_edits_l2 word, wordsSet   if candidates.length == 0
-    candidates = [word]                          if candidates.length == 0
+    candidates = known (edits_l1 word), wordsSet if empty candidates
+    candidates = known_edits_l2 word, wordsSet   if empty candidates
+    candidates = [word]                          if empty candidates
     candidates
 
 # Reading file
