@@ -82,13 +82,16 @@ printCorrection = (word, wordsSet) ->
 # Reading reference file and collecting words
 referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
 referenceWords = extractWords (referenceTxt)
-wordOccs = learn (referenceWords)
+referenceWordOccs = learn (referenceWords)
 referenceWordsSet = set (referenceWords)
 
 # Readiing file to check and extracting words
 toCheckTxt = fs.readFileSync process.argv[2], 'UTF-8'
 toCheckWords = extractWords (toCheckTxt)
 
-# Print correction
-printCorrection word, referenceWordsSet for word in toCheckWords
+# Print corrections
+checked = {}
+for word in toCheckWords when !checked[word]
+    checked[word] = true
+    printCorrection word, referenceWordsSet
 
