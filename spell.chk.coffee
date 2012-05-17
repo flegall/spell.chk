@@ -64,15 +64,15 @@ known = (words, wordsSet) ->
     
 # Suggests candidates for a word
 suggest = (word, wordsSet) ->
-    candidates = known [word], wordsSet
-    candidates = known (edits_l1 word), wordsSet if empty candidates
-    candidates = known_edits_l2 word, wordsSet   if empty candidates
+    candidates = known([word], wordsSet)
+    candidates = known(edits_l1(word), wordsSet) if empty candidates
+    candidates = known_edits_l2(word, wordsSet)  if empty candidates
     candidates = []                              if empty candidates
     candidates
 
 # Print correction replacement for a word
 printCorrection = (word, wordsSet) ->
-    candidates = suggest word, wordsSet
+    candidates = suggest(word, wordsSet)
 
     if empty candidates
         console.log "No suggestion found for: #{word}"
