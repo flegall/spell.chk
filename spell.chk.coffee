@@ -80,20 +80,26 @@ printCorrection = (word, wordsSet) ->
         console.log "Suggestions found for: #{word} : #{candidates}"
 
 console.log 'Reading reference file and collecting words'
+console.time 'Reading reference file and collecting words'
 referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
 referenceWords = extractWords (referenceTxt)
 referenceWordOccs = learn (referenceWords)
 referenceWordsSet = set (referenceWords)
+console.timeEnd 'Reading reference file and collecting words'
 console.log "#{referenceWords.length} words found"
 
-console.log 'Reading file to check and extracting words'
+console.log '\nReading file to check and extracting words'
+console.time 'Reading file to check and extracting words'
 toCheckTxt = fs.readFileSync process.argv[2], 'UTF-8'
 toCheckWords = extractWords (toCheckTxt)
+console.timeEnd 'Reading file to check and extracting words'
 console.log "#{toCheckWords.length} words found"
 
-# Print corrections
+console.log '\n\nPrint corrections'
+console.time 'Print corrections'
 checked = {}
 for word in toCheckWords when !checked[word]
     checked[word] = true
     printCorrection word, referenceWordsSet
 
+console.timeEnd 'Print corrections'
