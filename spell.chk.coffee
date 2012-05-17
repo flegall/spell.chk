@@ -6,11 +6,11 @@ util = require ('util')
 
 # inspect an object
 inspect = (object) ->
-    console.log (util.inspect object, true, null, true)
+    console.log(util.inspect object, true, null, true)
 
 # CL processing
 if process.argv.length != 4
-    console.error ('Usage coffee spell.chk.coffee file-to-check reference-file')
+    console.error('Usage coffee spell.chk.coffee file-to-check reference-file')
     return
 
 # Extract words of an input text
@@ -37,7 +37,7 @@ set = (array) ->
 
 # Makes an array of unique objects from an existing array
 unique = (array) ->
-    Object.keys (set (array))
+    Object.keys(set array)
 
 # Returns true if an array is empty
 empty = (array) ->
@@ -79,27 +79,37 @@ printCorrection = (word, wordsSet) ->
     else if candidates.length != 1 or candidates[0] =! word
         console.log "Suggestions found for: #{word} : #{candidates}"
 
+# Reading reference file and collecting words
 console.log 'Reading reference file and collecting words'
 console.time 'Reading reference file and collecting words'
-referenceTxt = fs.readFileSync process.argv[3], 'UTF-8'
-referenceWords = extractWords (referenceTxt)
-referenceWordOccs = learn (referenceWords)
-referenceWordsSet = set (referenceWords)
+referenceTxt = fs.readFileSync(process.argv[3], 'UTF-8')
+referenceWords = extractWords referenceTxt
+referenceWordOccs = learn referenceWords
+referenceWordsSet = set referenceWords
 console.timeEnd 'Reading reference file and collecting words'
 console.log "#{referenceWords.length} words found"
 
+# Reading file to check and extracting words
 console.log '\nReading file to check and extracting words'
 console.time 'Reading file to check and extracting words'
-toCheckTxt = fs.readFileSync process.argv[2], 'UTF-8'
-toCheckWords = extractWords (toCheckTxt)
+toCheckTxt = fs.readFileSync(process.argv[2], 'UTF-8')
+toCheckWords = extractWords toCheckTxt
 console.timeEnd 'Reading file to check and extracting words'
 console.log "#{toCheckWords.length} words found"
 
+# Printing corrections
 console.log '\n\nPrint corrections'
 console.time 'Print corrections'
+begin = (new Date).getTime()
 checked = {}
 for word in toCheckWords when !checked[word]
     checked[word] = true
-    printCorrection word, referenceWordsSet
-
+    printCorrection(word, referenceWordsSet)
 console.timeEnd 'Print corrections'
+
+# Printing speed report
+end = (new Date).getTime()
+timeS = (end - begin) / 1000
+speed = (Math.round toCheckWords.length * 100 / timeS) / 100
+console.log "\n#{toCheckWords.length} words processed at #{speed} words/sec"
+
