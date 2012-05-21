@@ -46,12 +46,12 @@ empty = (array) ->
 # Returns all level1 mispellings from a word
 edits_l1 = (word) ->
     splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
-    splits = [].concat [[['', word]], splits, [[word, '']]]...
+    splits = [].concat([[['', word]], splits, [[word, '']]]...)
     deletes = (a + b[1..] for [a,b] in splits when b.length >= 1)
     transposes = (a + b[1] + b[0] + b[2..] for [a,b] in splits when b.length > 1)
-    replaces = [].concat (a + c + b[1..] for c in letters for [a,b] in splits when b.length >= 1)...
-    inserts = [].concat (a + c + b for c in letters for [a,b] in splits)...
-    unique ([].concat [deletes, transposes, replaces, inserts]...)
+    replaces = [].concat((a + c + b[1..] for c in letters for [a,b] in splits when b.length >= 1)...)
+    inserts = [].concat((a + c + b for c in letters for [a,b] in splits)...)
+    unique [].concat([deletes, transposes, replaces, inserts]...)
 
 # Returns all known words which are separarated from a level-2 distance from a word
 known_edits_l2 = (word, wordsSet) ->
