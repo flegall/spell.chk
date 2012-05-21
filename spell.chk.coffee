@@ -55,7 +55,7 @@ edits_l1 = (word) ->
 
 # Returns all known words which are separarated from a level-2 distance from a word
 known_edits_l2 = (word, wordsSet) ->
-    edits2 = (e2 for e2 in edits_l1 e1 when wordsSet[e2] for e1 in edits_l1 word)
+    edits2 = (e2 for e2 in edits_l1 e1 when wordsSet[e2] and word != e2 for e1 in edits_l1 word)
     unique ([].concat edits2...)
 
 # Returns a subset of words which are part of wordsSet
@@ -76,7 +76,7 @@ printCorrection = (word, wordsSet) ->
 
     if empty candidates
         console.log "No suggestion found for: #{word}"
-    else if candidates.length != 1 or candidates[0] =! word
+    else if candidates.length != 1 or candidates[0] != word
         console.log "Suggestions found for: #{word} : #{candidates}"
 
 # Reading reference file and collecting words
