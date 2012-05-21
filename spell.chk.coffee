@@ -4,6 +4,10 @@
 fs = require ('fs')
 util = require ('util')
 
+# Constants
+LEVEL1_LIMIT = 5000
+LEVEL2_LIMIT = 40
+
 # inspect an object
 inspect = (object) ->
     console.log(util.inspect(object, true, null, true))
@@ -44,18 +48,19 @@ empty = (array) ->
     array.length == 0
 
 # Returns all level1 mispellings from a word
-edits_l1 = (word) ->
+edits_l1 = (word, limit) ->
     splits = ([word[0..i], word[i+1..word.length]] for i in [0..word.length-2])
     splits = [].concat([[['', word]], splits, [[word, '']]]...)
     deletes = (a + b[1..] for [a,b] in splits when b.length >= 1)
     transposes = (a + b[1] + b[0] + b[2..] for [a,b] in splits when b.length > 1)
     replaces = [].concat((a + c + b[1..] for c in letters for [a,b] in splits when b.length >= 1)...)
     inserts = [].concat((a + c + b for c in letters for [a,b] in splits)...)
-    unique [].concat([deletes, transposes, replaces, inserts]...)
+    edits = [].concat([deletes, transposes, replaces, inserts]...)
+    unique (edits.slice(0, limit))
 
 # Returns all known words which are separarated from a level-2 distance from a word
 known_edits_l2 = (word, wordsSet) ->
-    edits2 = (e2 for e2 in edits_l1(e1) when wordsSet[e2] and word != e2 for e1 in edits_l1(word))
+    edits2 = (e2 for e2 in edits_l1(e1, LEVEL2_LIMIT) when wordsSet[e2] and word != e2 for e1 in edits_l1(word, LEVEL1_LIMIT))
     unique ([].concat edits2...)
 
 # Returns a subset of words which are part of wordsSet
@@ -65,7 +70,7 @@ known = (words, wordsSet) ->
 # Suggests candidates for a word
 suggest = (word, wordsSet) ->
     candidates = known([word], wordsSet)
-    candidates = known(edits_l1(word), wordsSet) if empty(candidates)
+    candidates = known(edits_l1(word, LEVEL1_LIMIT), wordsSet) if empty(candidates)
     candidates = known_edits_l2(word, wordsSet)  if empty(candidates)
     candidates = []                              if empty(candidates)
     candidates
